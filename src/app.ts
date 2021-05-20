@@ -1,14 +1,26 @@
 import writeResultsToCsv from "./reporting/writeResults";
 import getTotalBalance from "./api/getTotalBalance";
-import getTotalSpent from "./api/getTotalDeposited";
 import showResultNotification from "./reporting/showResultNotification";
 import config from "./config";
+import getDepositHistory from "./api/getDepositHistory";
+import getWithdrawalHistory from "./api/getWithdrawalHistory";
 
 async function run(): Promise<void> {
-  const [spentEur, balanceEur] = await Promise.all([
-    getTotalSpent("EUR"),
+  const [depositHistory, withdrawalsHistory, balanceEur] = await Promise.all([
+    getDepositHistory({ symbol: "EUR" }),
+    getWithdrawalHistory({ symbol: "EUR" }),
     getTotalBalance("EUR"),
   ]);
+
+  const spentEur =
+    depositHistory.reduce(
+      (result, deposit) => result + deposit.amount + deposit.fee,
+      0
+    ) -
+    withdrawalsHistory.reduce(
+      (result, withdrawal) => result + withdrawal.amount + withdrawal.fee,
+      0
+    );
 
   await writeResultsToCsv({ spentEur, balanceEur });
   showResultNotification({ spentEur, balanceEur });

@@ -3,7 +3,7 @@ import callApi from "./helpers/callApi";
 /**
  * Note: Limited to 1,000 items
  */
-export default async function getDepositHistory(
+export default async function getWithdrawalHistory(
   options: {
     symbol?: string;
   } = {}
@@ -27,17 +27,17 @@ export default async function getDepositHistory(
     }>
   >({
     method: "GET",
-    path: "/depositHistory",
+    path: "/withdrawalHistory",
     query: {
       ...options,
       limit: "1000",
     },
   });
 
-  return response.map((deposit) => ({
-    timestamp: new Date(deposit.timestamp),
-    symbol: deposit.symbol,
-    amount: parseFloat(deposit.amount),
-    fee: parseFloat(deposit.fee),
+  return response.map((withdrawal) => ({
+    timestamp: new Date(withdrawal.timestamp),
+    symbol: withdrawal.symbol,
+    amount: parseFloat(withdrawal.amount),
+    fee: parseFloat(withdrawal.fee),
   }));
 }
