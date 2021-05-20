@@ -1,0 +1,22 @@
+{
+  "name": "bitvavo-updates",
+  "version": "1.0.0",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "start:dev": "ts-node -r dotenv/config ./src/app.ts",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "dotenv": "^9.0.2",
+    "node-notifier": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^15.0.3",
+    "@types/node-notifier": "^8.0.0",
+    "prettier": "2.3.0",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.4"
+  }
+}
