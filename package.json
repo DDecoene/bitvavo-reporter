@@ -10,6 +10,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "dotenv": "^9.0.2",
+    "moment": "^2.29.1",
     "node-notifier": "^9.0.1"
   },
   "devDependencies": {

@@ -1,43 +1,31 @@
-import writeResultsToCsv from "./reporting/writeResults";
-import getTotalBalance from "./api/getTotalBalance";
-import showResultNotification from "./reporting/showResultNotification";
-import config from "./config";
-import getDepositHistory from "./api/getDepositHistory";
-import getWithdrawalHistory from "./api/getWithdrawalHistory";
+import { getTransactions, TransactionList } from "./api/getTransactions";
+import getActiveMarkets from "./api/getActiveMarkets";
+import writeCoinstatsCSV from "./reporting/writeCoinstatsCSV";
+import writeCointrackerCSV from "./reporting/writeCointrackerCSV";
 
-async function run(): Promise<void> {
-  const [depositHistory, withdrawalsHistory, balanceEur] = await Promise.all([
-    getDepositHistory({ symbol: "EUR" }),
-    getWithdrawalHistory({ symbol: "EUR" }),
-    getTotalBalance("EUR"),
-  ]);
+async function main(): Promise<void> {
 
-  const spentEur =
-    depositHistory.reduce(
-      (result, deposit) => result + deposit.amount + deposit.fee,
-      0
-    ) -
-    withdrawalsHistory.reduce(
-      (result, withdrawal) => result + withdrawal.amount + withdrawal.fee,
-      0
-    );
+  let tl: TransactionList = []
+  const markets: Array<string> = await getActiveMarkets()
 
-  await writeResultsToCsv({ spentEur, balanceEur });
-  showResultNotification({ spentEur, balanceEur });
+  for (const market of markets) {
+    const trades = await getTransactions({ market: market })
+    //console.log("market", market, "t", trades)
+    for (const trade of trades) {
+      tl.push(trade)
+    }
+  }
 
-  console.log("Results reported");
+  //await writeCoinstatsCSV(tl)
+  await writeCointrackerCSV(tl)
+
+  console.log("Done.")
+
 }
 
-const minutes = config.notificationIntervalMinutes;
-
-console.log(`Notifications will show every ${minutes} minutes`);
-
-run();
-
-setInterval(() => {
-  run();
-}, minutesToMillis(minutes));
-
-function minutesToMillis(minutes: number): number {
-  return minutes * 60_000;
-}
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });

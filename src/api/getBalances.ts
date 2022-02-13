@@ -1,7 +1,4 @@
-import axios from "axios";
-import config from "../config";
 import callApi from "./helpers/callApi";
-import createSignature from "./helpers/createSignature";
 
 interface BalanceResult {
   symbol: string;
@@ -16,9 +13,9 @@ interface Balance {
 }
 
 type BalanceResultList = Array<BalanceResult>
-type BalanceList = Array<Balance>
+export type BalanceList = Array<Balance>
 
-export default async function getBalances(options: { symbol?: string } = {}): Promise<BalanceList> {
+export async function getBalances(options: { symbol?: string } = {}): Promise<BalanceList> {
   const response = await callApi<BalanceResultList>({
     method: "GET",
     path: "/balance",
@@ -28,7 +25,7 @@ export default async function getBalances(options: { symbol?: string } = {}): Pr
   let r: BalanceList = []
 
   response.forEach(
-    (b: BalanceResult) => {
+    (b) => {
       r.push(
         {
           symbol: b.symbol,
